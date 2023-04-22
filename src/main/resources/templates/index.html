@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="nl" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Nummer Opzoeker</title>
+    <link rel="icon" th:href="@{/images/flag.ico}" type="image/x-icon">
+</head>
+<body style="font-family: Tahoma,serif">
+<br>
+
+
+
+
+<div class="mobile">
+    <table style="width: 100%;text-align: center">
+        <tr>
+            <td style="border: 1px solid grey; width: 100%" >
+                <h1>Zoek voor- of familienaam:</h1>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br><br>
+                <form id="mobileFormke">
+                <input id="mobileIdke" type="text" value="" autofocus style="transform: scale(3.0)" />
+                </form>
+                <br><br><br><br>
+            </td>
+        </tr>
+    </table>
+
+
+    <table th:if="${newList}" class="mobileTable" style="width: 100%; border: 1px solid red; ">
+        <tr style="text-align: center">
+            <td colspan="7">
+                Results
+                <th:block th:if="${mostlyMale}"> (mostly males)</th:block>
+                <th:block th:if="${mostlyFemale}"> (mostly females)</th:block>
+                <br>
+                Query completed in <th:block th:text="${time}"></th:block> milliseconds
+            </td>
+        </tr>
+
+        <tr th:each="user : ${newList}">
+
+            <td>
+                <a th:href="${user.facebookid}" target=”_blank”>
+                    <img src="/images/fb.png" width="100" height="100">
+                </a>
+            </td>
+            <td>
+                <a th:href="${user.whatsapp}">
+                    <img src="/images/whatsapp1.png" width="100" height="100" style="padding: 0; margin: 0" >
+                </a>
+            </td>
+            <td>
+                <h1 style="font-size: 40px;" th:text="|${user.name} ${user.familyname}|"></h1>
+
+            </td>
+            <td>
+
+                <th:block th:if="${user.getCity() != ''}">
+                <th:block th:if="${user.getProvince() != ''}">
+                    <h1 th:text="|${user.city}, ${user.province}|"></h1>
+                </th:block>
+                </th:block>
+                <h2 style="font-family: 'Lucida Console'; color: darkgrey" th:text="${user.phonenumber}"></h2>
+
+
+            </td>
+        </tr>
+    </table>
+
+
+
+
+
+</div>
+
+<div class="desktop">
+    <table id="firstTable">
+        <tr>
+            <td>
+                <form id="formke">
+                    Zoek voor- of familienaam: <input type="text" value=""/>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+
+    <div id="tt">
+        <table th:if="${newList}">
+            <tr>
+                <td colspan="7" id="results">
+                    Results
+                    <th:block th:if="${mostlyMale}"> (mostly males), women are in  </th:block>
+                    <th:block th:if="${mostlyMale}"> <label style="color: #CF00E0">pink</label>  </th:block>
+
+                    <th:block th:if="${mostlyFemale}">(mostly females), men are in  </th:block>
+                    <th:block th:if="${mostlyFemale}"> <label style="color: #0032d2">blue</label>  </th:block>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td> <strong>GSM</strong> </td>
+                <td><strong>Voornaam</strong></td>
+                <td><strong>Familienaam</strong></td>
+                <td><strong>Stad</strong></td>
+                <td><strong>Regio</strong></td>
+                <td><strong>Facebook-link</strong></td>
+            </tr>
+
+            <div></div>
+
+            <tr th:each="user : ${newList}">
+                <td id="phonenumber"><th:block th:text="${user.phonenumber}"></th:block></td>
+
+                <th:block th:if="${user.getGender() == 'male'} or ${user.getGender() == 'female'}">
+
+                    <th:block th:if="${mostlyMale} and ${user.getGender().equals('male')}">
+                        <td id="mostlyMaleMaleName" th:text="${user.name}"></td>
+                        <td id="mostlyMaleMaleFamilyName" th:text="${user.familyname}"></td>
+                    </th:block>
+                    <th:block th:if="${mostlyMale} and ${user.getGender().equals('female')}">
+                        <td id="mostlyMaleFemaleName" th:text="${user.name}"></td>
+                        <td id="mostlyMaleFemaleFamilyName" th:text="${user.familyname}"></td>
+                    </th:block>
+                    <th:block th:if="${mostlyFemale} and ${user.getGender().equals('male')}">
+                        <td id="mostlyFemaleMaleName" th:text="${user.name}"></td>
+                        <td id="mostlyFemaleMaleFamilyName" th:text="${user.familyname}"></td>
+
+                    </th:block>
+                    <th:block th:if="${mostlyFemale} and ${user.getGender().equals('female')}">
+                        <td id="mostlyFemaleFemaleName" th:text="${user.name}"></td>
+                        <td id="mostlyFemaleFemaleFamilyName" th:text="${user.familyname}"></td>
+
+                    </th:block>
+
+                </th:block>
+
+                <th:block th:if="!${user.getGender() == 'male'} and !${user.getGender() == 'female'}">
+                    <td id="name" th:text="${user.name}"></td>
+                    <td id="familyname" th:text="${user.familyname}"></td>
+                </th:block>
+                <td id="city" th:text="${user.city}"></td>
+                <td id="province" th:text="${user.province}"></td>
+                <td id="facebookid"><a th:href="${user.facebookid}" target=”_blank”>Facebook-profiel</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
+
+<script>
+
+
+
+    document.getElementById("mobileFormke").addEventListener("submit", function (ev) {
+        console.log("eventlistener activated")
+        ev.preventDefault();
+        this.action = "/" + this.querySelector("input").value;
+        this.submit()
+    })
+
+    document.getElementById("formke").addEventListener("submit", function (ev) {
+        console.log("eventlistener activated")
+        ev.preventDefault();
+        this.action = "/" + this.querySelector("input").value;
+        this.submit()
+    })
+
+    document.querySelector("form").addEventListener("submit", function (ev) {
+        console.log("eventlistener activated")
+        ev.preventDefault();
+        this.action = "/" + this.querySelector("input").value;
+        this.submit()
+    })
+</script>
+
+<style>
+
+    .mobileTable{
+
+    }
+    .mobileTable td{
+        border-spacing: 0;
+        border-left: 1px solid lightgray !important;
+        border-bottom: 1px solid lightgray !important;
+    }
+    .mobileTable tr{
+
+    }
+
+    #mobileFirstTable{
+        width: 100%;
+    }
+
+    #mobileFirstTable tr{
+        width: 100%;
+    }
+
+
+
+    #mobileFormke{
+        width: 100%;
+    }
+
+
+
+    #mostlyMaleMaleName{
+        width: 2%;
+    }
+    #mostlyMaleMaleFamilyName{
+        width: 2%;
+    }
+    #mostlyMaleFemaleName{
+        width: 2%;
+        color: #CF00E0;
+    }
+    #mostlyMaleFemaleFamilyName{
+        width: 2%;
+        color: #CF00E0;
+    }
+
+    #mostlyFemaleMaleName{
+        width: 2%;
+        color: #0032d2;
+    }
+    #mostlyFemaleMaleFamilyName{
+        width: 2%;
+        color: #0032d2;
+    }
+    #mostlyFemaleFemaleName{
+        width: 2%;
+    }
+    #mostlyFemaleFemaleFamilyName{
+        width: 2%;
+    }
+
+
+
+
+    #firstTable {
+        width: 60%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #firstTable tr{
+        text-align: center;
+    }
+    #results{
+        border: 1px solid lightgray !important;
+        text-align: center;
+    }
+
+
+    #tt table {
+        /*border: 1px solid red;*/
+        width: 60%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #tt td {
+        border-spacing: 0;
+        border-left: 1px solid lightgray !important;
+        border-bottom: 1px solid lightgray !important;
+
+    }
+
+    #tt td {
+        border-left: 1px solid lightgray !important;
+        border-bottom: 1px solid lightgray !important;
+    }
+
+    #phonenumber {
+        width: 2%;
+    }
+
+    #name {
+        width: 2%;
+    }
+
+    #familyname {
+        width: 2%;
+    }
+
+    #gender {
+        width: 3%;
+    }
+
+    #city {
+        width: 3%;
+    }
+
+    #province {
+        width: 3%;
+    }
+
+    #facebookid {
+        width: 5%;
+        border-right:1px solid lightgray !important;
+    }
+
+    #formke{
+        transform: scale(1.1);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    .mobile {
+        display: none;
+    }
+    @media only screen
+    and (min-device-width: 320px)
+    and (max-device-width: 480px) {
+        .mobile {
+            display: inline;
+        }
+    }
+
+    .desktop {
+        display: inline;
+    }
+    @media only screen
+    and (min-device-width: 320px)
+    and (max-device-width: 480px) {
+        .desktop {
+            display: none;
+        }
+    }
+</style>
